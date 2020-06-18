@@ -1,0 +1,15 @@
+name: CommunityProjekt
+version: 0.1
+api-version: 1.15
+main: com.bwgy.main.Main
+commands:
+  reset:
+    description: Setzt die Farmwelt zurück!
+  world:
+    description: Teleportiert einen Spieler in eine Welt!
+  clan:
+    description: Clan Management!
+  ban:
+    description: Ban Management
+  unban:
+    description: Ban Management
