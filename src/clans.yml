@@ -1,0 +1,8 @@
+clans:
+  HOST:
+    users:
+      S_Jones:
+        rank: "Creator"
+      somulordkingAPI:
+        rank: "Creator"
+    points: 0
