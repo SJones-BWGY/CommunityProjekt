@@ -42,8 +42,6 @@ public class Config {
         Integer code=99;
         if(getConfig().getConfigurationSection("clan."+name.toUpperCase())==null){
             if(getClan(leader)==null) {
-
-
                 FileConfiguration tmp_cfg = getConfig();
                 tmp_cfg.set("clan." + name.toUpperCase() + ".players." + leader.getName() + ".rank", "CREATOR");
                 try {
@@ -123,7 +121,7 @@ public class Config {
     }
     public static List<String> getClanMembers(String clan){
         List<String> value = null;
-        for (Object obj:getConfig().getConfigurationSection("clans."+clan).getKeys(true)){
+        for (Object obj:getConfig().getConfigurationSection("clans."+clan).getKeys(false).toArray()){
             if(obj instanceof String){
                 value.add((String)obj);
             }
@@ -134,7 +132,7 @@ public class Config {
     }
     public static String getClan(Player player) {
         String value=null;
-        for (String clan:getConfig().getConfigurationSection("clan").getKeys(true)){
+        for (String clan:getConfig().getConfigurationSection("clan").getKeys(false)){
             if (getConfig().getConfigurationSection("clan." + clan + ".players." + player) != null) {
                 value = clan;
             }
