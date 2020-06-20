@@ -3,6 +3,7 @@ package com.bwgy.clansystem;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import com.bwgy.main.Main;
@@ -44,8 +45,7 @@ public class Config {
         Main.getPlugin().getLogger().info("Checking if the clan already exists...");
         if(getConfig().getConfigurationSection("clan."+name.toUpperCase())==null){
             Main.getPlugin().getLogger().info("Checking if the user is already in a clan...");
-            getClan(leader);
-            if(getClan(leader).equals("UNKNOWN")) {
+
                 Main.getPlugin().getLogger().info("Setting up the config...");
                 FileConfiguration tmp_cfg = getConfig();
                 tmp_cfg.set("clan." + name.toUpperCase() + ".players." + leader.getName() + ".rank", "CREATOR");
@@ -59,9 +59,7 @@ public class Config {
             }else{
                 code=3;
             }
-        }else{
-            code=1;
-        }
+
         return code;
 
     }
@@ -136,23 +134,9 @@ public class Config {
         return value;
 
     }
-    public static String getClan(@NotNull Player player) {
-        String value;
-        for(Object cln : getConfig().getConfigurationSection("clan").getKeys(false).toArray()){
-            String clan=String.valueOf(cln);
-            Main.getPlugin().getLogger().info("For loop 1: Clan "+clan+" detected!");
-            for (Object user:getConfig().getConfigurationSection("clan."+((String) clan).toUpperCase()+".players").getKeys(false).toArray()){
-                String usr=String.valueOf(user);
-                Main.getPlugin().getLogger().info("For loop 2: User "+usr+" detected!");
-                if(UUID.fromString(usr).equals(player.getUniqueId())){
-                    Main.getPlugin().getLogger().info("User found: "+usr+"!");
-                    value=clan;
-                    return value;
-                }
-            }
-        }
-        value="UNKNOWN";
-        return value;
+    public static String getClan(UUID playeruid) {
+        players
+        return null;
     }
     public static boolean hasClan(Player player){
         return getClan(player)!=null;
