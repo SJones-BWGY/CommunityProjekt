@@ -37,11 +37,11 @@ public class EconomySystem implements Listener {
     public void onEntityDeath(EntityDeathEvent e){
         if(e.getEntity().getKiller() != null){
             if(e.getEntity() instanceof EnderDragon){
-                Config.addPoints(Config.getClan(e.getEntity().getKiller()),1000);
+                Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1000);
             }else if(e.getEntity() instanceof Wither){
-                Config.addPoints(Config.getClan(e.getEntity().getKiller()),1000);
+                Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1000);
             }else{
-                Config.addPoints(Config.getClan(e.getEntity().getKiller()),1);
+                Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1);
             }
         }
     }
@@ -105,12 +105,12 @@ public class EconomySystem implements Listener {
                         public void run() {
 
                             if (getMoney(p) < 0) {
-                                if (Config.isLeader(Config.getClan(p), p)) {
+                                if (Config.isLeader(Config.getClan(p.getUniqueId()), p)) {
                                     p.sendMessage("§4Du bist zu lange verschuldet! Dein Clan wird gelöscht!");
                                 } else {
                                     p.sendMessage("§4Du bist zu lange verschuldet! Du wirst aus deinem Clan gekickt!");
                                 }
-                                Config.kickPlayer(Config.getClan(p), Bukkit.getOfflinePlayer(p.getUniqueId()));
+                                Config.kickPlayer(Config.getClan(p.getUniqueId()), Bukkit.getOfflinePlayer(p.getUniqueId()));
                             }
                             indebted_players.remove(p.getUniqueId());
 

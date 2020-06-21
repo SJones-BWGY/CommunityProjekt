@@ -44,13 +44,13 @@ public class Config {
         Integer code=99;
         Main.getPlugin().getLogger().info("Checking if the clan already exists...");
         if(getConfig().getConfigurationSection("clan."+name.toUpperCase())==null){
-            Main.getPlugin().getLogger().info("Checking if the user is already in a clan...");
 
                 Main.getPlugin().getLogger().info("Setting up the config...");
                 FileConfiguration tmp_cfg = getConfig();
                 tmp_cfg.set("clan." + name.toUpperCase() + ".players." + leader.getName() + ".rank", "CREATOR");
                 try {
                     tmp_cfg.save(configfile);
+                    PlayerManagement.setClan(leader.getUniqueId(),name);
                     code = 0;
                 } catch (IOException e) {
                     code = 2;
@@ -135,11 +135,10 @@ public class Config {
 
     }
     public static String getClan(UUID playeruid) {
-        players
-        return null;
+        return PlayerManagement.getClan(playeruid);
     }
     public static boolean hasClan(Player player){
-        return getClan(player)!=null;
+        return PlayerManagement.getClan(player.getUniqueId())!=null;
     }
     public static Integer getPoints(String clan){
         return getConfig().getInt("clan."+clan+".points");
