@@ -3,6 +3,7 @@ package com.bwgy.main;
 import com.bwgy.WorldManagement.WorldMgr;
 import com.bwgy.clansystem.EconomySystem;
 import com.bwgy.commands.ClanMgr;
+import com.bwgy.commands.PayCommand;
 import com.bwgy.commands.ResetMap;
 import com.bwgy.commands.WorldCommand;
 import org.bukkit.Bukkit;
@@ -21,6 +22,7 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginCommand("world").setExecutor(new WorldCommand());
         Bukkit.getPluginCommand("clan").setExecutor(new ClanMgr());
         Bukkit.getPluginCommand("ban").setExecutor(new BanSystem());
+        Bukkit.getPluginCommand("pay").setExecutor(new PayCommand());
         Bukkit.getPluginManager().registerEvents(new AntiBuildListener(),this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(),this);
         Bukkit.getPluginManager().registerEvents(new EconomySystem(),this);

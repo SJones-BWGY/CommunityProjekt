@@ -13,3 +13,5 @@ commands:
     description: Ban Management
   unban:
     description: Ban Management
+  pay:
+    description: Erklärt sich vonselbst...
