@@ -17,8 +17,8 @@ public class PayCommand implements CommandExecutor {
                 if(Bukkit.getPlayer(args[0])!=null){
                     if(Integer.valueOf(args[1])!=null) {
                         EconomySystem.removeMoney(p,Integer.valueOf(args[1]));
-                        EconomySystem.addMoney(Bukkit.getPlayer(args[0]),Integer.valueOf(args[0]));
-                        p.sendMessage("§e"+args[0]+"§e€+§a wurden an §e"+args[1]+"§a überwiesen!");
+                        EconomySystem.addMoney(Bukkit.getPlayer(args[0]),Integer.valueOf(args[1]));
+                        p.sendMessage("§e"+args[1]+"§e€§a wurden an §e"+args[0]+"§a überwiesen!");
                     }else{
                         p.sendMessage("§4"+args[1]+"§c konnte nicht als gültige Zahl  erkannt werden!");
                     }
