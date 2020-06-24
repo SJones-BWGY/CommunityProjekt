@@ -2,14 +2,15 @@ package com.bwgy.clansystem;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import com.bwgy.main.Main;
+import com.sun.corba.se.spi.ior.ObjectKey;
 import com.sun.istack.internal.NotNull;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -43,22 +44,26 @@ public class Config {
     public static Integer createClan(@NotNull String name, @NotNull Player leader){
         Integer code=99;
         Main.getPlugin().getLogger().info("Checking if the clan already exists...");
-        if(getConfig().getConfigurationSection("clan."+name.toUpperCase())==null){
+        if(PlayerManagement.getClan(leader.getUniqueId())==null){
+            if(getConfig().getConfigurationSection("clan."+name.toUpperCase())==null) {
 
                 Main.getPlugin().getLogger().info("Setting up the config...");
                 FileConfiguration tmp_cfg = getConfig();
-                tmp_cfg.set("clan." + name.toUpperCase() + ".players." + leader.getName() + ".rank", "CREATOR");
+                tmp_cfg.set("clan." + name.toUpperCase() + ".players." + String.valueOf(leader.getUniqueId()) + ".rank", "CREATOR");
                 try {
                     tmp_cfg.save(configfile);
-                    PlayerManagement.setClan(leader.getUniqueId(),name);
+                    PlayerManagement.setClan(leader.getUniqueId(), name);
                     code = 0;
                 } catch (IOException e) {
                     code = 2;
                 }
                 Main.getPlugin().getLogger().info("Config created and saved!");
             }else{
-                code=3;
+                code=1;
             }
+        }else{
+            code=3;
+        }
 
         return code;
 
@@ -82,7 +87,7 @@ public class Config {
     }
     public static Boolean isInClan(String clan, Player player){
         Boolean value=false;
-        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).contains(player.getName())){
+        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).contains(String.valueOf(player.getUniqueId()))){
             value=true;
         }
         return value;
@@ -113,7 +118,7 @@ public class Config {
                     Main.getPlugin().getLogger().severe("We don't know what to do :/");
                     Main.getPlugin().getLogger().severe(" Maybe your clan config is broken or something like this...");
                     Main.getPlugin().getLogger().severe(getConfig().saveToString());
-                    code=-1;
+                    code=1;
                 }
             }else{
                 code=2;
@@ -125,7 +130,7 @@ public class Config {
     }
     public static List<String> getClanMembers(String clan){
         List<String> value = null;
-        for (Object obj:getConfig().getConfigurationSection("clans."+clan).getKeys(false).toArray()){
+        for (Object obj:getConfig().getConfigurationSection("clans."+clan+".players").getKeys(false).toArray()){
             if(obj instanceof String){
                 value.add((String)obj);
             }
@@ -144,9 +149,84 @@ public class Config {
         return getConfig().getInt("clan."+clan+".points");
     }
     public static void addPoints(String clan, Integer val){
-        getConfig().set("clan."+clan+".points",getConfig().getInt("clan"+clan+".points")+val);
+        FileConfiguration tmp=getConfig();
+        tmp.set("clan."+clan+".points",(getConfig().getInt("clan."+clan+".points")+val));
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
     }
     public static void removePoints(String clan, Integer val){
-        getConfig().set("clan."+clan+".points",getConfig().getInt("clan"+clan+".points")-val);
+        FileConfiguration tmp=getConfig();
+        tmp.set("clan."+clan+".points",getConfig().getInt("clan"+clan+".points")-val);
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
     }
+    public static void setClan(UUID player,String clan){
+        FileConfiguration tmp=getConfig();
+        tmp.set("clan."+clan+".players."+String.valueOf(player)+".rank","MEMBER");
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
+    }
+    public static void claimChunk(String clan, Location chunk){
+        FileConfiguration tmp=getConfig();
+        List<String> chunks=new ArrayList<String>();
+        if((getConfig().getList("clan."+clan+".chunks"))==null){
+
+        }else{
+            for(Object o:getConfig().getList("clan."+clan+".chunks")){
+                chunks.add((String)o);
+            }
+        }
+        chunks.add(String.valueOf(chunk));
+        tmp.set("clan."+clan+".chunks",chunks);
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
+    }
+    public static List<Chunk> getClaimedChunks(String clan){
+        List<Chunk> chunks=new ArrayList<Chunk>();
+        if((getConfig().getList("clan."+clan+".chunks"))==null){
+
+        }else{
+            for(Object o:getConfig().getList("clan."+clan+".chunks")){
+                if(o instanceof String){
+                    chunks.add((Bukkit.getWorld("world").getChunkAt((Location)o)));
+                }
+
+            }
+        }
+        return chunks;
+    }
+    public static List<Chunk> getAllClaimedChunks(){
+        List<Chunk> chunks=new ArrayList<>();
+        for(String clan:getConfig().getConfigurationSection("clan").getKeys(true)){
+            if(getConfig().getList("clan."+clan+".chunks")!=null){
+                for(Object o:getConfig().getList("clan."+clan+".chunks")){
+                    if(o instanceof String){
+                        chunks.add((Bukkit.getWorld("world").getChunkAt((Location)o)));
+                    }
+                }
+            }
+        }
+        return chunks;
+    }
+    public static List<String>
 }

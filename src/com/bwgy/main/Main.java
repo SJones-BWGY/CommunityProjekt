@@ -38,6 +38,12 @@ public class Main extends JavaPlugin {
             }
         },0,100);
     }
+    public void onDisable(){
+        for(Player p:Bukkit.getOnlinePlayers()){
+            p.kickPlayer("§cDer Server startet neu!");
+        }
+        Bukkit.getServer().shutdown();
+    }
     public static Main getPlugin(){
         return plugin;
     }
