@@ -2,10 +2,7 @@ package com.bwgy.main;
 
 import com.bwgy.WorldManagement.WorldMgr;
 import com.bwgy.clansystem.EconomySystem;
-import com.bwgy.commands.ClanMgr;
-import com.bwgy.commands.PayCommand;
-import com.bwgy.commands.ResetMap;
-import com.bwgy.commands.WorldCommand;
+import com.bwgy.commands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
@@ -23,6 +20,7 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginCommand("clan").setExecutor(new ClanMgr());
         Bukkit.getPluginCommand("ban").setExecutor(new BanSystem());
         Bukkit.getPluginCommand("pay").setExecutor(new PayCommand());
+        Bukkit.getPluginCommand("coins").setExecutor(new CoinsCommand());
         Bukkit.getPluginManager().registerEvents(new AntiBuildListener(),this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(),this);
         Bukkit.getPluginManager().registerEvents(new EconomySystem(),this);
@@ -31,7 +29,6 @@ public class Main extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
             @Override
             public void run() {
-                Main.getPlugin().getLogger().info("Refreshing Economy");
                 for(Player p:Bukkit.getOnlinePlayers()){
 
                     EconomySystem.checkPlayer(p);

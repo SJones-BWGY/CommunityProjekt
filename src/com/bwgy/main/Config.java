@@ -12,9 +12,9 @@ public class Config {
         Main.getPlugin().reloadConfig();
         return Main.getPlugin().getConfig();
     }
-    public static Boolean isInPvpArena(Location loc){
-        Location maxlocation=new Location(Bukkit.getWorld("world"),getConfig().getInt("pvparena.firstx"),getConfig().getInt("pvparena.firsty"),getConfig().getInt("pvparena.firstz"));
-        Location minlocation=new Location(Bukkit.getWorld("world"),getConfig().getInt("pvparena.secondx"),getConfig().getInt("pvparena.secondy"),getConfig().getInt("pvparena.secondz"));
-        return LocationUtils.isInside(maxlocation,minlocation,loc);
+    public static Boolean isInPvpArena(Location loc) {
+        Location maxlocation = new Location(Bukkit.getWorld("world"), getConfig().getInt("pvparena.firstx"), getConfig().getInt("pvparena.firsty"), getConfig().getInt("pvparena.firstz"));
+        Location minlocation = new Location(Bukkit.getWorld("world"), getConfig().getInt("pvparena.secondx"), getConfig().getInt("pvparena.secondy"), getConfig().getInt("pvparena.secondz"));
+        return LocationUtils.isInside(maxlocation, minlocation, loc);
     }
 }

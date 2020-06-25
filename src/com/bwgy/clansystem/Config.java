@@ -69,7 +69,7 @@ public class Config {
 
     }
     public static Boolean isLeader(String clan,Player player){
-        return getConfig().getString(("clan."+clan.toUpperCase()+".players.")+".rank").equalsIgnoreCase("CREATOR")||getConfig().getString("clan."+clan.toUpperCase()+".players."+player.getName()+".rank").equalsIgnoreCase("LEADER");
+        return getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank")).equalsIgnoreCase("CREATOR")||getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank")).equalsIgnoreCase("LEADER");
     }
     public static Boolean isUnranked(String clan,Player player){
         if(getConfig().get(("clan."+clan.toUpperCase()+".players.")+".rank")=="MEMBER"){
@@ -94,9 +94,10 @@ public class Config {
     }
     public static Integer kickPlayer(String clan, OfflinePlayer player){
         Integer code=0;
-        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).contains(player.getName())){
+        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).contains(String.valueOf(player.getUniqueId()))){
             if(getConfig().getString(("clan."+clan.toUpperCase()+".players.")+".rank").equalsIgnoreCase("CREATOR")) {
-                getConfig().set(("clan."+clan.toUpperCase()+".players."), null);
+                getConfig().set(("clan."+clan.toUpperCase()), null);
+                PlayerManagement.setClan(player.getUniqueId(),null);
             }else{
                 code=2;
             }
@@ -227,6 +228,21 @@ public class Config {
             }
         }
         return chunks;
+    }
+    public static Boolean hasChunkPermission(UUID player){
+        if(getClan(player)!=null){
+            if(getAllClaimedChunks().contains(Bukkit.getPlayer(player))){
+                if(getClaimedChunks(getClan(player)).contains(Bukkit.getPlayer(player).getLocation().getChunk())){
+                    return true;
+                }else {
+                    return false;
+                }
+            }else{
+                    return true;
+                }
+        }else{
+            return false;
+        }
     }
 
 }

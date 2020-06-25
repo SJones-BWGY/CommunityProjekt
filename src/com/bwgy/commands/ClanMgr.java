@@ -65,8 +65,12 @@ public class ClanMgr implements CommandExecutor {
                 }
             }else if(args[0].equalsIgnoreCase("claimchunk")){
                 if(sender instanceof Player) {
-
-                    Config.claimChunk(Config.getClan(((Player) sender).getUniqueId()),((Player) sender).getLocation());
+                    if(Config.getPoints(Config.getClan(((Player)sender).getUniqueId()))>999) {
+                        Config.claimChunk(Config.getClan(((Player) sender).getUniqueId()), ((Player) sender).getLocation());
+                        ((Player)sender).sendMessage("§aDer Chunk wurde geclaimed!");
+                    }else{
+                        ((Player)sender).sendMessage("§cDein Clan hat zu wenige Punkte! Du benötigst mindestens §41000§c!");
+                    }
                 }else{
                     sender.sendMessage("§4Du musst ein Spieler sein!");
                 }

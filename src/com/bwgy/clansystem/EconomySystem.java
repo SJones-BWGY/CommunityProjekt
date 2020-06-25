@@ -92,22 +92,25 @@ public class EconomySystem implements Listener {
         }
     }
     public static void checkPlayer(@NotNull Player p) {
-        Main.getPlugin().getLogger().info("Checking "+p.getName()+"...");
+
         if (getMoney(p) < 0) {
-            Main.getPlugin().getLogger().info("Player has less money than 0");
+
                 if(!indebted_players.contains(p.getUniqueId())) {
-                    Main.getPlugin().getLogger().info("Player is indebted!");
+                    Main.getPlugin().getLogger().info("Routine started!");
                     p.sendMessage("§4Du bist verschuldet! Farme §c" + Math.abs(getMoney(p)) + "§4 Blöcke!");
                     indebted_players.add(p.getUniqueId());
-                    Main.getPlugin().getLogger().info("Making the Task ready...");
+
                     Bukkit.getScheduler().runTaskLater(Main.getPlugin(), new Runnable() {
                         @Override
                         public void run() {
 
                             if (getMoney(p) < 0) {
+                                Main.getPlugin().getLogger().info(p.getName()+" is still indebted!");
                                 if (Config.isLeader(Config.getClan(p.getUniqueId()), p)) {
+                                    Main.getPlugin().getLogger().info(p.getName()+"s Clan has been deleted!");
                                     p.sendMessage("§4Du bist zu lange verschuldet! Dein Clan wird gelöscht!");
                                 } else {
+                                    Main.getPlugin().getLogger().info(p.getName()+" is kicked out of his Clan!");
                                     p.sendMessage("§4Du bist zu lange verschuldet! Du wirst aus deinem Clan gekickt!");
                                 }
                                 Config.kickPlayer(Config.getClan(p.getUniqueId()), Bukkit.getOfflinePlayer(p.getUniqueId()));
