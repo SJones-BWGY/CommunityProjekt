@@ -1,6 +1,7 @@
 package com.bwgy.clansystem;
 
 import com.bwgy.main.Main;
+import com.sun.istack.internal.NotNull;
 import net.minecraft.server.v1_15_R1.ChatMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -16,7 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatEvent;
-import org.jetbrains.annotations.NotNull;
+
 
 import java.io.*;
 import java.util.ArrayList;

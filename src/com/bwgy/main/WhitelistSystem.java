@@ -51,7 +51,7 @@ public class WhitelistSystem implements CommandExecutor, Listener {
         }
     }
     @EventHandler
-    public void on(ServerListPingEvent e){
+    public void onServerListPing(ServerListPingEvent e){
         if(MOTD==null) {
             update();
         }
@@ -59,17 +59,22 @@ public class WhitelistSystem implements CommandExecutor, Listener {
 
     }
     public static void update(){
-        mode=WhitelistMode.valueOf(config.getString("mode").toUpperCase());
-
-            if (mode.equals(WhitelistMode.OFF)) {
-                MOTD = "§c§lCommunityProjekt\n§aFree for all";
-            } else if (mode.equals(WhitelistMode.ON)) {
-                MOTD = "§c§lCommunityProjekt\n§cAuthorized access only!";
-            } else if (mode.equals(WhitelistMode.WAITING)) {
-                MOTD = "§c§lCommunityProjekt\n§aWhitelisting open: Waiting for " + (getConfig().getInt("waitfor") - getConfig().getConfigurationSection("players").getKeys(true).size() + "§2 players!");
-            } else if (mode.equals(WhitelistMode.MAINTENANCE)) {
-                MOTD = "§c§lCommunityProjekt\n§4Maintenance mode!";
-            } else {
+        getConfig();
+        mode=WhitelistMode.valueOf(getConfig().getString("mode").toUpperCase());
+        MOTD="§4An error occured white updating the MOTD!";
+            if(mode!=null) {
+                if (mode.equals(WhitelistMode.OFF)) {
+                    MOTD = "§c§lCommunityProjekt\n§aFree for all";
+                } else if (mode.equals(WhitelistMode.ON)) {
+                    MOTD = "§c§lCommunityProjekt\n§cAuthorized access only!";
+                } else if (mode.equals(WhitelistMode.WAITING)) {
+                    MOTD = "§c§lCommunityProjekt\n§aWhitelisting open: Waiting for " + (getConfig().getInt("waitfor") - getConfig().getConfigurationSection("players").getKeys(true).size() + "§2 players!");
+                } else if (mode.equals(WhitelistMode.MAINTENANCE)) {
+                    MOTD = "§c§lCommunityProjekt\n§4Maintenance mode!";
+                } else {
+                    MOTD = "§4An error occurred while updating the MOTD";
+                }
+            }else{
                 MOTD = "§4An error occurred while updating the MOTD";
             }
 

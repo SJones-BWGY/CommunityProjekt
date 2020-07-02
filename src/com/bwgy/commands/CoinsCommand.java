@@ -1,12 +1,13 @@
 package com.bwgy.commands;
 
 import com.bwgy.clansystem.EconomySystem;
+import com.sun.istack.internal.NotNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+
 
 public class CoinsCommand implements CommandExecutor {
     @Override
@@ -26,3 +27,4 @@ public class CoinsCommand implements CommandExecutor {
         return false;
     }
 }
+

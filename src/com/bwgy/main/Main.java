@@ -20,6 +20,7 @@ public class Main extends JavaPlugin {
     }
     public void onEnable(){
         plugin=this;
+        WhitelistSystem.getConfig();
         if(!Boot.getConfig().getBoolean("nofarmworldreset")) {
             WorldCreator farm = new WorldCreator("farmwelt");
             farm.createWorld();
@@ -40,6 +41,7 @@ public class Main extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new AntiBuildListener(),this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(),this);
         Bukkit.getPluginManager().registerEvents(new EconomySystem(),this);
+        Bukkit.getPluginManager().registerEvents(new WhitelistSystem(),this);
         Bukkit.getPluginManager().registerEvents(new RebootCommand(),this);
         WorldMgr.FarmWorld=Bukkit.getWorld("farmwelt");
         WorldMgr.FarmWorldFolder=WorldMgr.FarmWorld.getWorldFolder();
