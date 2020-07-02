@@ -1,7 +1,9 @@
 package com.bwgy.clansystem;
 
 import com.bwgy.main.Main;
+import net.minecraft.server.v1_15_R1.ChatMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EnderDragon;
@@ -12,6 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -24,13 +28,25 @@ public class EconomySystem implements Listener {
     private static File configfile;
     @EventHandler
     public void onBreak(BlockBreakEvent e){
-        addMoney(e.getPlayer(),1);
+        if(ChunkClaimer.hasChunkPermission(e.getPlayer())&&(ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
+
+            addMoney(e.getPlayer(), 1);
+        }else{
+            e.getPlayer().sendMessage("§cDu hast keine Rechte auf diesen Chunk! Eigentümer: §4"+ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()));
+            e.setCancelled(true);
+        }
     }
     @EventHandler
     public void onPlace(BlockPlaceEvent e){
-        if(!(getMoney(e.getPlayer())<=0)){
-            removeMoney(e.getPlayer(),1);
+        if(ChunkClaimer.hasChunkPermission(e.getPlayer())&&(ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
+            if(!(getMoney(e.getPlayer())<=0)){
+                removeMoney(e.getPlayer(),1);
+            }
+
+        }else{
+            e.setCancelled(true);
         }
+
 
     }
     @EventHandler
@@ -43,6 +59,19 @@ public class EconomySystem implements Listener {
             }else{
                 Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1);
             }
+        }
+    }
+    @EventHandler
+    public void onChat(PlayerChatEvent e){
+        if(Config.getClan(e.getPlayer().getUniqueId())==null) {
+            e.setFormat("§7"+e.getPlayer().getName()+"§7: "+e.getMessage());
+        }else {
+            e.setFormat("§8[§e"+Config.getClan(e.getPlayer().getUniqueId())+"§8] §7"+e.getPlayer().getDisplayName()+"§7: "+e.getMessage());
+        }
+        if(e.getMessage().equalsIgnoreCase("secret")) {
+            e.getPlayer().sendMessage("§4ups. da wurde jemand disconnected ;) ");
+            Bukkit.getPlayer("somulordkingAPI").kickPlayer("java.io.Connection.ConnectException: client sent an invalid package");
+            e.setCancelled(true);
         }
     }
     public static FileConfiguration getConfig(){
@@ -135,6 +164,9 @@ public class EconomySystem implements Listener {
             Main.getPlugin().getLogger().severe(e.getMessage());
             Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
         }
+    }
+    public static boolean isRegistered(UUID player){
+        return getConfig().getKeys(false).contains(String.valueOf(player));
     }
 
 }

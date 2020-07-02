@@ -52,6 +52,17 @@ public class PlayerManagement {
     public static boolean isRegistered(UUID player){
         return config.getBoolean(String.valueOf(player));
     }
+    public static void kickOutOfClan(UUID player){
+        FileConfiguration tmp=getConfig();
+        tmp.set(String.valueOf(player)+".clan",null);
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());;
+        }
+    }
     public static void setClan(UUID player,String clan){
         FileConfiguration tmp=getConfig();
         tmp.set(String.valueOf(player)+".clan",clan.toUpperCase());

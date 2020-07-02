@@ -11,9 +11,6 @@ public class WorldMgr {
     public static World FarmWorld;
     public static File FarmWorldFolder;
     public static void resetFarmWorld(){
-        DisconnectPlayers();
-        Bukkit.unloadWorld("farmwelt",false);
-        World farmworld=WorldMgr.FarmWorld;
         Bukkit.unloadWorld("farmwelt",false);
         for(File a: WorldMgr.FarmWorldFolder.listFiles()){
             a.delete();

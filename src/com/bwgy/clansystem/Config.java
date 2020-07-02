@@ -8,6 +8,7 @@ import com.bwgy.main.Main;
 import com.sun.corba.se.spi.ior.ObjectKey;
 import com.sun.istack.internal.NotNull;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import io.netty.util.internal.IntegerHolder;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -94,10 +95,18 @@ public class Config {
     }
     public static Integer kickPlayer(String clan, OfflinePlayer player){
         Integer code=0;
-        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).contains(String.valueOf(player.getUniqueId()))){
-            if(getConfig().getString(("clan."+clan.toUpperCase()+".players.")+".rank").equalsIgnoreCase("CREATOR")) {
-                getConfig().set(("clan."+clan.toUpperCase()), null);
-                PlayerManagement.setClan(player.getUniqueId(),null);
+        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).getKeys(true).contains(String.valueOf(player.getUniqueId()))){
+            if(getConfig().getString(("clan."+clan.toUpperCase()+".players."+player.getUniqueId())+".rank").equalsIgnoreCase("CREATOR")) {
+                FileConfiguration tmp=getConfig();
+                tmp.set(("clan."+clan.toUpperCase()), null);
+                PlayerManagement.kickOutOfClan(player.getUniqueId());
+                try {
+                    tmp.save(configfile);
+                } catch (IOException e) {
+                    Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+                    Main.getPlugin().getLogger().severe(e.getMessage());
+                    Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+                }
             }else{
                 code=2;
             }
@@ -182,67 +191,6 @@ public class Config {
             Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
         }
     }
-    public static void claimChunk(String clan, Location chunk){
-        FileConfiguration tmp=getConfig();
-        List<String> chunks=new ArrayList<String>();
-        if((getConfig().getList("clan."+clan+".chunks"))==null){
 
-        }else{
-            for(Object o:getConfig().getList("clan."+clan+".chunks")){
-                chunks.add((String)o);
-            }
-        }
-        chunks.add(String.valueOf(chunk));
-        tmp.set("clan."+clan+".chunks",chunks);
-        try {
-            tmp.save(configfile);
-        } catch (IOException e) {
-            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
-            Main.getPlugin().getLogger().severe(e.getMessage());
-            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
-        }
-    }
-    public static List<Chunk> getClaimedChunks(String clan){
-        List<Chunk> chunks=new ArrayList<Chunk>();
-        if((getConfig().getList("clan."+clan+".chunks"))==null){
-
-        }else{
-            for(Object o:getConfig().getList("clan."+clan+".chunks")){
-                if(o instanceof String){
-                    chunks.add((Bukkit.getWorld("world").getChunkAt((Location)o)));
-                }
-
-            }
-        }
-        return chunks;
-    }
-    public static List<Chunk> getAllClaimedChunks(){
-        List<Chunk> chunks=new ArrayList<>();
-        for(String clan:getConfig().getConfigurationSection("clan").getKeys(true)){
-            if(getConfig().getList("clan."+clan+".chunks")!=null){
-                for(Object o:getConfig().getList("clan."+clan+".chunks")){
-                    if(o instanceof String){
-                        chunks.add((Bukkit.getWorld("world").getChunkAt((Location)o)));
-                    }
-                }
-            }
-        }
-        return chunks;
-    }
-    public static Boolean hasChunkPermission(UUID player){
-        if(getClan(player)!=null){
-            if(getAllClaimedChunks().contains(Bukkit.getPlayer(player))){
-                if(getClaimedChunks(getClan(player)).contains(Bukkit.getPlayer(player).getLocation().getChunk())){
-                    return true;
-                }else {
-                    return false;
-                }
-            }else{
-                    return true;
-                }
-        }else{
-            return false;
-        }
-    }
 
 }
