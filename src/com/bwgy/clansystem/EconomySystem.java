@@ -29,23 +29,30 @@ public class EconomySystem implements Listener {
     private static File configfile;
     @EventHandler
     public void onBreak(BlockBreakEvent e){
-        if(ChunkClaimer.hasChunkPermission(e.getPlayer())&&(ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
+        if((ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()))!=null) {
+            if (ChunkClaimer.hasChunkPermission(e.getPlayer()) && (ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
 
-            addMoney(e.getPlayer(), 1);
+                addMoney(e.getPlayer(), 1);
+            } else {
+                e.getPlayer().sendMessage("§cDu hast keine Rechte auf diesen Chunk! Eigentümer: §4" + ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()));
+                e.setCancelled(true);
+            }
         }else{
-            e.getPlayer().sendMessage("§cDu hast keine Rechte auf diesen Chunk! Eigentümer: §4"+ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()));
-            e.setCancelled(true);
+            addMoney(e.getPlayer(), 1);
         }
     }
     @EventHandler
     public void onPlace(BlockPlaceEvent e){
-        if(ChunkClaimer.hasChunkPermission(e.getPlayer())&&(ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
-            if(!(getMoney(e.getPlayer())<=0)){
-                removeMoney(e.getPlayer(),1);
-            }
+        if((ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()))!=null) {
+            if (ChunkClaimer.hasChunkPermission(e.getPlayer()) && (ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
 
+                removeMoney(e.getPlayer(), 1);
+            } else {
+                e.getPlayer().sendMessage("§cDu hast keine Rechte auf diesen Chunk! Eigentümer: §4" + ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()));
+                e.setCancelled(true);
+            }
         }else{
-            e.setCancelled(true);
+            removeMoney(e.getPlayer(), 1);
         }
 
 
