@@ -55,8 +55,28 @@ public class ClanMgr implements CommandExecutor {
                     }else{
                         sender.sendMessage(ChatColor.DARK_RED+"Du musst ein Spieler sein!");
                     }
+                }else if(args[0].equalsIgnoreCase("leave")&&args[1].equalsIgnoreCase("confirm")){
+                        if(sender instanceof Player){
+                            Player p=(Player)sender;
+                            if(Config.getClan(p.getUniqueId())!=null){
+                                if(Config.isLeader(Config.getClan(p.getUniqueId()),p)){
+                                    String clan=Config.getClan(p.getUniqueId());
+                                    Config.kickPlayer(Config.getClan(p.getUniqueId()),p);
+                                    p.sendMessage("§4Dein Clan, §c"+clan+"§4 wurde gelöscht!");
+
+                                }else{
+                                    Config.kickPlayer(Config.getClan(p.getUniqueId()),p);
+                                    p.sendMessage("§4Du hast deinen Clan verlassen.");
+                                }
+                            }else{
+                                p.sendMessage("§4[Fehler] §cIch weiß nicht, welchen Clan du verlassen willst...");
+                            }
+                        }else{
+                            sender.sendMessage("§4alter halt dein maul und lass mich inruhe :/");
+                        }
                 }else{
-                    sender.sendMessage(ChatColor.RED+"Ungültiger Syntax!");
+                    sender.sendMessage(
+                            ChatColor.RED+"Ungültiger Syntax!");
                 }
 
         }else if(args.length==1){
@@ -79,7 +99,14 @@ public class ClanMgr implements CommandExecutor {
                 }else{
                     sender.sendMessage("§4Du musst ein Spieler sein!");
                 }
+            }else if(args[0].equalsIgnoreCase("leave")){
+                if(sender instanceof Player){
+                    sender.sendMessage("§cBenutze: §4/clan leave confirm§c!");
+                }else{
+                    sender.sendMessage("nö");
+                }
             }
+
         }else{
             sender.sendMessage(ChatColor.RED+"Ungültiger Syntax!");
         }
