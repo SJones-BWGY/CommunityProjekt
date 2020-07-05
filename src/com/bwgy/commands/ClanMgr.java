@@ -12,8 +12,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ClanMgr implements CommandExecutor {
+    public static void sendHelp(Player p) {
+        p.sendMessage("§aClan-System Hilfe");
+        p.sendMessage("§e/clan create <Name> §a-> §eErstellt den Clan <Name> (100000€ benötigt).");
+        p.sendMessage("§e/clan claimchunk §a-> §eClaimt den aktuellen Chunk. (1000P benötigt).");
+        p.sendMessage("§e/clan invite <Spieler> §a-> §eInvited den Spieler <Spieler>.");
+        p.sendMessage("§e/clan kick <Spieler> §a-> §eKickt den Spieler <Spieler> aus deinem Clan.");
+        p.sendMessage("§e/clan accept §a-> Nimmt die aktuelle Clananfrage an.");
+        p.sendMessage("§e/clan promote <Spieler> §a-> Erhöht den Rang von <Spieler>");
+        p.sendMessage("§e/cc <Nachricht> §a-> §eSendet <Nachricht> in den Clanchat.");
+    }
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args){
+
         if(args.length==2){
 
                 if(args[0].equalsIgnoreCase("create")) {
@@ -75,8 +86,7 @@ public class ClanMgr implements CommandExecutor {
                             sender.sendMessage("§4alter halt dein maul und lass mich inruhe :/");
                         }
                 }else{
-                    sender.sendMessage(
-                            ChatColor.RED+"Ungültiger Syntax!");
+                    sendHelp((Player)sender);
                 }
 
         }else if(args.length==1){
@@ -105,10 +115,12 @@ public class ClanMgr implements CommandExecutor {
                 }else{
                     sender.sendMessage("nö");
                 }
+            }else{
+                sendHelp((Player)sender);
             }
 
         }else{
-            sender.sendMessage(ChatColor.RED+"Ungültiger Syntax!");
+            sendHelp((Player)sender);
         }
         return false;
     }
