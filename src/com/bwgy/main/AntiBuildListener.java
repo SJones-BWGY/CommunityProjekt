@@ -24,7 +24,7 @@ public class AntiBuildListener implements Listener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent e){
-        if(Config.isInPvpArena(e.getPlayer().getLocation())) {
+        if(Config.isInPvpArena(e.getPlayer().getLocation())||Config.isInSpawnArea(e.getPlayer().getLocation())) {
 
 
             if (!(e.getPlayer().hasPermission("build"))) {
@@ -34,7 +34,7 @@ public class AntiBuildListener implements Listener {
     }
     @EventHandler
     public void onPlace(BlockPlaceEvent e){
-        if(Config.isInPvpArena(e.getPlayer().getLocation())) {
+        if(Config.isInPvpArena(e.getPlayer().getLocation())||Config.isInSpawnArea(e.getPlayer().getLocation())) {
             if (!(e.getPlayer().hasPermission("build"))) {
                 e.setCancelled(true);
             }
@@ -42,7 +42,7 @@ public class AntiBuildListener implements Listener {
     }
     @EventHandler
     public void onDrop(PlayerDropItemEvent e){
-        if(Config.isInPvpArena(e.getPlayer().getLocation())) {
+        if(Config.isInPvpArena(e.getPlayer().getLocation())||Config.isInSpawnArea(e.getPlayer().getLocation())) {
             if (!(e.getPlayer().getGameMode().equals(GameMode.CREATIVE))) {
                 e.setCancelled(true);
             }
@@ -50,7 +50,7 @@ public class AntiBuildListener implements Listener {
     }
     @EventHandler
     public void onInteract(InventoryClickEvent e){
-        if(Config.isInPvpArena(e.getWhoClicked().getLocation())) {
+        if(Config.isInPvpArena(e.getWhoClicked().getLocation())||Config.isInSpawnArea(e.getWhoClicked().getLocation())) {
             if (!(e.getWhoClicked().getGameMode().equals(GameMode.CREATIVE))) {
                 e.setCancelled(true);
             }
@@ -59,7 +59,7 @@ public class AntiBuildListener implements Listener {
     }
     @EventHandler
     public void onHandItemSwap(PlayerSwapHandItemsEvent e){
-        if(Config.isInPvpArena(e.getPlayer().getLocation())) {
+        if(Config.isInPvpArena(e.getPlayer().getLocation())||Config.isInSpawnArea(e.getPlayer().getLocation())) {
             if (!(e.getPlayer().getGameMode().equals(GameMode.CREATIVE))) {
                 e.setCancelled(true);
             }
@@ -68,6 +68,7 @@ public class AntiBuildListener implements Listener {
     }
     @EventHandler
     public void onDeath(PlayerDeathEvent e){
+
         e.setDroppedExp(0);
         e.getEntity().getKiller();
         if(Config.isInPvpArena(e.getEntity().getLocation())) {
@@ -85,7 +86,13 @@ public class AntiBuildListener implements Listener {
             e.setDeathMessage("§e"+e.getEntity().getName()+" §7ist gestorben!");
         }
 
-    }
 
+    }
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent e){
+        if(Config.isInSpawnArea(e.getEntity().getLocation())){
+            e.setCancelled(true);
+        }
+    }
 
 }

@@ -17,4 +17,9 @@ public class Config {
         Location minlocation = new Location(Bukkit.getWorld("world"), getConfig().getInt("pvparena.secondx"), getConfig().getInt("pvparena.secondy"), getConfig().getInt("pvparena.secondz"));
         return LocationUtils.isInside(maxlocation, minlocation, loc);
     }
+    public static Boolean isInSpawnArea(Location loc) {
+        Location maxlocation = new Location(Bukkit.getWorld("world"), getConfig().getInt("lobby.firstx"), getConfig().getInt("lobby.firsty"), getConfig().getInt("lobby.firstz"));
+        Location minlocation = new Location(Bukkit.getWorld("world"), getConfig().getInt("lobby.secondx"), getConfig().getInt("lobby.secondy"), getConfig().getInt("lobby.secondz"));
+        return LocationUtils.isInside(maxlocation, minlocation, loc);
+    }
 }

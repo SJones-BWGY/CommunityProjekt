@@ -82,9 +82,23 @@ public class ClanMgr implements CommandExecutor {
                             }else{
                                 p.sendMessage("§4[Fehler] §cIch weiß nicht, welchen Clan du verlassen willst...");
                             }
-                        }else{
-                            sender.sendMessage("§4alter halt dein maul und lass mich inruhe :/");
+
                         }
+                }else if(args[0].equalsIgnoreCase("kick")){
+                    if(sender instanceof Player) {
+                        if (Bukkit.getOfflinePlayer(args[1]) != null) {
+                            if(Config.getClan(Bukkit.getOfflinePlayer(args[1]).getUniqueId()).equals(Config.getClan(((Player)sender).getUniqueId()))){
+                                    
+                                Config.kickPlayer(Config.getClan(((Player)sender).getUniqueId()),Bukkit.getOfflinePlayer(args[1]));
+                                sender.sendMessage("§aDer Spieler §e"+args[1]+"§a wurde gekickt!");
+                            }else{
+                                sender.sendMessage("§4[Fehler] §cDieser Spieler ist nicht in deinem Clan.");
+                            }
+                        } else {
+                            sender.sendMessage("§4Wer ist das? Den kenne ich net...");
+                        }
+                    }
+
                 }else{
                     sendHelp((Player)sender);
                 }
