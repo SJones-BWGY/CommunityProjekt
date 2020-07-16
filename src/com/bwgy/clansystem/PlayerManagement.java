@@ -91,7 +91,7 @@ public class PlayerManagement {
     }
     public static void acceptClanInvite(UUID player){
         if(claninvites.get(player)!=null){
-            Config.setClan(player, String.valueOf(claninvites.get(player)));
+            ClanSystem.setClan(player, String.valueOf(claninvites.get(player)));
             setClan(player, String.valueOf(claninvites.get(player)));
             Bukkit.getPlayer(player).sendMessage("§aWillkommen im §e"+getClan(player)+"§a Clan!");
         }else{

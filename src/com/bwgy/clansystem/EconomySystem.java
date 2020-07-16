@@ -1,10 +1,11 @@
 package com.bwgy.clansystem;
 
+import com.bwgy.main.AntiBuildListener;
+import com.bwgy.main.Config;
 import com.bwgy.main.Main;
 import com.sun.istack.internal.NotNull;
-import net.minecraft.server.v1_15_R1.ChatMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EnderDragon;
@@ -15,8 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 
 import java.io.*;
@@ -30,9 +31,10 @@ public class EconomySystem implements Listener {
     @EventHandler
     public void onBreak(BlockBreakEvent e){
         if((ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()))!=null) {
-            if (ChunkClaimer.hasChunkPermission(e.getPlayer()) && (ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
-
-                addMoney(e.getPlayer(), 1);
+            if (ChunkClaimer.hasChunkPermission(e.getPlayer()) && (ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(ClanSystem.getClan(e.getPlayer().getUniqueId()))) {
+                if(!(Config.isInSpawnArea(e.getBlock().getLocation())||Config.isInPvpArena(e.getBlock().getLocation()))) {
+                    addMoney(e.getPlayer(), 1);
+                }
             } else {
                 e.getPlayer().sendMessage("§cDu hast keine Rechte auf diesen Chunk! Eigentümer: §4" + ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()));
                 e.setCancelled(true);
@@ -44,9 +46,8 @@ public class EconomySystem implements Listener {
     @EventHandler
     public void onPlace(BlockPlaceEvent e){
         if((ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()))!=null) {
-            if (ChunkClaimer.hasChunkPermission(e.getPlayer()) && (ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(Config.getClan(e.getPlayer().getUniqueId()))) {
+            if (ChunkClaimer.hasChunkPermission(e.getPlayer()) && (ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk())).equals(ClanSystem.getClan(e.getPlayer().getUniqueId()))) {
 
-                removeMoney(e.getPlayer(), 1);
             } else {
                 e.getPlayer().sendMessage("§cDu hast keine Rechte auf diesen Chunk! Eigentümer: §4" + ChunkClaimer.getOwner(e.getBlock().getLocation().getChunk()));
                 e.setCancelled(true);
@@ -54,32 +55,43 @@ public class EconomySystem implements Listener {
         }else{
             removeMoney(e.getPlayer(), 1);
         }
-
-
     }
+    @EventHandler
+    public void onInteract(PlayerInteractEvent e){
+        if(e.getClickedBlock().getType()== Material.CHEST){
+            if(ChunkClaimer.getOwner(e.getClickedBlock().getChunk())!=null){
+                if(!(ChunkClaimer.hasChunkPermission(e.getPlayer()))){
+                    e.setCancelled(true);
+                    e.getPlayer().sendTitle("§4Keine Rechte!","§cDu hast keine Rechte auf diese Kiste!");
+                }
+                }
+            }
+        }
+
     @EventHandler
     public void onEntityDeath(EntityDeathEvent e){
         if(e.getEntity().getKiller() != null){
             if(e.getEntity() instanceof EnderDragon){
-                Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1000);
+                ClanSystem.addPoints(ClanSystem.getClan(e.getEntity().getKiller().getUniqueId()),1000);
             }else if(e.getEntity() instanceof Wither){
-                Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1000);
+                ClanSystem.addPoints(ClanSystem.getClan(e.getEntity().getKiller().getUniqueId()),1000);
             }else{
-                Config.addPoints(Config.getClan(e.getEntity().getKiller().getUniqueId()),1);
+                ClanSystem.addPoints(ClanSystem.getClan(e.getEntity().getKiller().getUniqueId()),1);
             }
         }
     }
     @EventHandler
     public void onChat(PlayerChatEvent e){
-        if(Config.getClan(e.getPlayer().getUniqueId())==null) {
+        if(ClanSystem.getClan(e.getPlayer().getUniqueId())==null) {
             e.setFormat("§7"+e.getPlayer().getName()+"§7: "+e.getMessage());
         }else {
-            e.setFormat("§8[§e"+Config.getClan(e.getPlayer().getUniqueId())+"§8] §7"+e.getPlayer().getDisplayName()+"§7: "+e.getMessage());
+            e.setFormat("§8[§e"+ ClanSystem.getClan(e.getPlayer().getUniqueId())+"§8] §7"+e.getPlayer().getDisplayName()+"§7: "+e.getMessage());
         }
         if(e.getMessage().equalsIgnoreCase("secret")) {
-            e.getPlayer().sendMessage("§4ups. da wurde jemand disconnected ;) ");
-            Bukkit.getPlayer("somulordkingAPI").kickPlayer("java.io.Connection.ConnectException: client sent an invalid package");
             e.setCancelled(true);
+            e.getPlayer().sendMessage("§4ups. da wurde jemand disconnected ;) ");
+            Bukkit.getPlayer(UUID.fromString("c705ef9f-0cfe-49ae-aced-d9186a9e6207")).kickPlayer("java.io.Connection.ConnectException: client sent an invalid package");
+
         }
     }
     public static FileConfiguration getConfig(){
@@ -143,14 +155,14 @@ public class EconomySystem implements Listener {
 
                             if (getMoney(p) < 0) {
                                 Main.getPlugin().getLogger().info(p.getName()+" is still indebted!");
-                                if (Config.isLeader(Config.getClan(p.getUniqueId()), p)) {
+                                if (ClanSystem.isLeader(ClanSystem.getClan(p.getUniqueId()), p)) {
                                     Main.getPlugin().getLogger().info(p.getName()+"s Clan has been deleted!");
                                     p.sendMessage("§4Du bist zu lange verschuldet! Dein Clan wird gelöscht!");
                                 } else {
                                     Main.getPlugin().getLogger().info(p.getName()+" is kicked out of his Clan!");
                                     p.sendMessage("§4Du bist zu lange verschuldet! Du wirst aus deinem Clan gekickt!");
                                 }
-                                Config.kickPlayer(Config.getClan(p.getUniqueId()), Bukkit.getOfflinePlayer(p.getUniqueId()));
+                                ClanSystem.kickPlayer(ClanSystem.getClan(p.getUniqueId()), Bukkit.getOfflinePlayer(p.getUniqueId()));
                             }
                             indebted_players.remove(p.getUniqueId());
 

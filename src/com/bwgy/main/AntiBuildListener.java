@@ -25,8 +25,6 @@ public class AntiBuildListener implements Listener {
     @EventHandler
     public void onBreak(BlockBreakEvent e){
         if(Config.isInPvpArena(e.getPlayer().getLocation())||Config.isInSpawnArea(e.getPlayer().getLocation())) {
-
-
             if (!(e.getPlayer().hasPermission("build"))) {
                 e.setCancelled(true);
             }
@@ -64,7 +62,6 @@ public class AntiBuildListener implements Listener {
                 e.setCancelled(true);
             }
         }
-
     }
     @EventHandler
     public void onDeath(PlayerDeathEvent e){

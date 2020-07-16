@@ -1,8 +1,20 @@
 name: CommunityProjekt
-version: 1.1.1
+version: 2.2.0
 api-version: 1.15
 main: com.bwgy.main.Main
 commands:
+  warps:
+    description: Zeigt alle warps an.
+  abilities:
+    description: Öffnet das FähigkeitenMenü
+  warp:
+    description: Warp
+  tpa:
+    description: Teleport-Requests
+  sell:
+    description: Fügt ein Item in den Clanshop hinzu.
+  shop:
+    description: Öffnet den Shop eines Clans.
   reset:
     description: Setzt die Farmwelt zurück!
   world:
@@ -16,6 +28,9 @@ commands:
   pay:
     description: Erklärt sich vonselbst...
   coins:
+    aliases: [money]
     description: Erklärt sich vonselbst...
   reboot:
     description: Reboot(ONLY FOR DEVELOPERS)
+  cc:
+    aliases: [clanchat]

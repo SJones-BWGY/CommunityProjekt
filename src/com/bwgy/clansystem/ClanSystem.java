@@ -18,7 +18,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-public class Config {
+public class ClanSystem {
     private static FileConfiguration config;
     private static File configfile;
     public static FileConfiguration getConfig(){
@@ -58,7 +58,7 @@ public class Config {
                 } catch (IOException e) {
                     code = 2;
                 }
-                Main.getPlugin().getLogger().info("Config created and saved!");
+                Main.getPlugin().getLogger().info("ClanSystem created and saved!");
             }else{
                 code=1;
             }
@@ -70,18 +70,22 @@ public class Config {
 
     }
     public static Boolean isLeader(String clan,Player player){
-        return getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank")).equalsIgnoreCase("CREATOR")||getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank")).equalsIgnoreCase("LEADER");
+        if(getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank"))!=null) {
+            return getConfig().getString("clan." + clan.toUpperCase() + ".players." + String.valueOf(player.getUniqueId() + ".rank")).equalsIgnoreCase("CREATOR") || getConfig().getString("clan." + clan.toUpperCase() + ".players." + String.valueOf(player.getUniqueId() + ".rank")).equalsIgnoreCase("LEADER");
+        }else{
+            return false;
+        }
     }
     public static Boolean isUnranked(String clan,Player player){
-        if(getConfig().get(("clan."+clan.toUpperCase()+".players.")+".rank")=="MEMBER"){
-            return true;
+        if(getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank"))!=null) {
+            return getConfig().getString("clan." + clan.toUpperCase() + ".players." + String.valueOf(player.getUniqueId() + ".rank")).equalsIgnoreCase("MEMBER");
         }else{
             return false;
         }
     }
     public static Boolean isModerator(String clan,Player player){
-        if(getConfig().get("clan."+clan.toUpperCase()+"."+player.getName()+".rank")=="MODERATOR"){
-            return true;
+        if(getConfig().getString("clan."+clan.toUpperCase()+".players."+String.valueOf(player.getUniqueId()+".rank"))!=null) {
+            return getConfig().getString("clan." + clan.toUpperCase() + ".players." + String.valueOf(player.getUniqueId() + ".rank")).equalsIgnoreCase("MODERATOR");
         }else{
             return false;
         }
@@ -115,20 +119,69 @@ public class Config {
         }
         return code;
     }
-    public static Integer promotePlayer(String clan, Player player){
-        Integer code=0;
-        if(getConfig().getConfigurationSection(("clan."+clan.toUpperCase()+".players.")).contains(player.getName())){
-            if(getConfig().getString(("clan."+clan.toUpperCase()+".players.")).equalsIgnoreCase("CREATOR")||getConfig().getString("clans."+clan.toUpperCase()+"."+player.getName()).equalsIgnoreCase("LEADER")) {
-                if(getConfig().getString(("clan."+clan.toUpperCase()+".players.")).equalsIgnoreCase("MEMBER")){
-                    getConfig().set(("clan."+clan.toUpperCase()+".players.")+".rank","MODERATOR");
-                }else if(getConfig().getString("clans."+clan.toUpperCase()+"."+player.getName()+".rank").equalsIgnoreCase("MODERATOR")){
-                    getConfig().set(("clan."+clan.toUpperCase()+".players.")+".rank","LEADER");
+    public static Integer promotePlayer(String clan, UUID player){
+        Integer code=99;
+        if(getConfig().getConfigurationSection("clan."+clan+".players").getKeys(true).contains(String.valueOf(player))){
+            FileConfiguration tmp=getConfig();
+            if(isUnranked(clan,Bukkit.getPlayer(player))){
+                tmp.set("clan."+clan+".players."+String.valueOf(player)+".rank","MODERATOR");
+                try {
+                    tmp.save(configfile);
+                    code=0;
+                    return code;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    code=4;
+                }
+            }else if(isModerator(clan,Bukkit.getPlayer(player))){
+                tmp.set("clan."+clan+".players."+String.valueOf(player)+".rank","LEADER");
+                try {
+                    tmp.save(configfile);
+                    code=0;
+                    return code;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    code=4;
+                }
+            }else if(isLeader(clan,Bukkit.getPlayer(player))){
+                code=3;
+            }else{
+                code=2;
+            }
+        }else{
+            code=1;
+        }
+        return code;
+    }
+    public static Integer demotePlayer(String clan, UUID player){
+        Integer code=99;
+        if(getConfig().getConfigurationSection("clan."+clan+".players").getKeys(true).contains(String.valueOf(player))){
+            FileConfiguration tmp=getConfig();
+            if(isUnranked(clan,Bukkit.getPlayer(player))){
+                code=3;
+            }else if(isModerator(clan,Bukkit.getPlayer(player))){
+                tmp.set("clan."+clan+".players."+String.valueOf(player)+".rank","MEMBER");
+                try {
+                    tmp.save(configfile);
+                    code=0;
+                    return code;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    code=4;
+                }
+            }else if(isLeader(clan,Bukkit.getPlayer(player))){
+                if(!getConfig().getString("clan."+clan+".players."+String.valueOf(player)+".rank").equals("CREATOR")){
+                    tmp.set("clan."+clan+".players."+String.valueOf(player)+".rank","MODERATOR");
+                    try {
+                        tmp.save(configfile);
+                        code=0;
+                        return code;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        code=4;
+                    }
                 }else{
-                    Main.getPlugin().getLogger().severe("Something really weired happened trying to promote "+player.getName()+"!");
-                    Main.getPlugin().getLogger().severe("We don't know what to do :/");
-                    Main.getPlugin().getLogger().severe(" Maybe your clan config is broken or something like this...");
-                    Main.getPlugin().getLogger().severe(getConfig().saveToString());
-                    code=1;
+                    code=5;
                 }
             }else{
                 code=2;
@@ -138,11 +191,11 @@ public class Config {
         }
         return code;
     }
-    public static List<String> getClanMembers(String clan){
-        List<String> value = null;
-        for (Object obj:getConfig().getConfigurationSection("clans."+clan+".players").getKeys(false).toArray()){
-            if(obj instanceof String){
-                value.add((String)obj);
+    public static List<OfflinePlayer> getClanMembers(String clan){
+        List<OfflinePlayer> value = new ArrayList<>();
+        for (Object obj:getConfig().getConfigurationSection("clan."+clan+".players").getKeys(false).toArray()){
+            if(String.valueOf(obj)!=null){
+                value.add(Bukkit.getOfflinePlayer(UUID.fromString(String.valueOf(obj))));
             }
             
         }
@@ -171,7 +224,7 @@ public class Config {
     }
     public static void removePoints(String clan, Integer val){
         FileConfiguration tmp=getConfig();
-        tmp.set("clan."+clan+".points",getConfig().getInt("clan"+clan+".points")-val);
+        tmp.set("clan."+clan+".points",((getPoints(clan))-val));
         try {
             tmp.save(configfile);
         } catch (IOException e) {
@@ -189,6 +242,29 @@ public class Config {
             Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
             Main.getPlugin().getLogger().severe(e.getMessage());
             Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
+    }
+    public static void setClanHome(String clan, Location loc){
+        FileConfiguration tmp=getConfig();
+        tmp.set("clan."+clan+".home.x",loc.getBlockX());
+        tmp.set("clan."+clan+".home.y",loc.getBlockY());
+        tmp.set("clan."+clan+".home.z",loc.getBlockZ());
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
+    }
+    public static Location getClanHome(String clan) {
+        Integer x = getConfig().getInt("clan." + clan + ".home.x");
+        Integer y = getConfig().getInt("clan." + clan + ".home.y");
+        Integer z = getConfig().getInt("clan." + clan + ".home.z");
+        if (y!=0) {
+            return new Location(Bukkit.getWorld("world"), x, y, z);
+        } else {
+            return Bukkit.getWorld("world").getSpawnLocation();
         }
     }
 

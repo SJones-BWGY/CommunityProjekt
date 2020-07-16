@@ -21,43 +21,45 @@ public class RebootCommand implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String lbl, @NotNull String[] args) {
-        if(args.length==0){
-            for(Player p : Bukkit.getOnlinePlayers()){
-                p.kickPlayer("§cDer Server startet neu...");
-            }
-            Bukkit.getServer().shutdown();
-        }else if(args.length==1){
-            if(args[0].equalsIgnoreCase("lockdown")){
-                FileConfiguration tmp =Boot.getConfig();
-                tmp.set("lockdown",true);
-                try {
-                    tmp.save(Boot.getConfigfile());
-                } catch (IOException e) {
-
-                }
-                for(Player p:Bukkit.getOnlinePlayers()){
-                    p.kickPlayer("§cThe Server is rebooting in lockdown mode!\n§4NO one will be able to join after the reboot!\n§4This is to protect the server and the world");
-                }
-                Bukkit.getServer().shutdown();
-            }else if(args[0].equalsIgnoreCase("hardreset")){
-                for(Player p:Bukkit.getOnlinePlayers()){
-                    p.kickPlayer("§cThe Server is running a hardreset!\n§4The Economy- and Clansystem are being reset!");
-                }
-                for(File file : Main.getPlugin().getDataFolder().listFiles()){
-                    file.delete();
-                }
-                Bukkit.getServer().shutdown();
-
-            }else if(args[0].equalsIgnoreCase("noworldreset")){
-                for(Player p : Bukkit.getOnlinePlayers()){
+        if(sender.hasPermission("reboot")) {
+            if (args.length == 0) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
                     p.kickPlayer("§cDer Server startet neu...");
                 }
-                FileConfiguration tmp=Boot.getConfig();
-                tmp.set("nofarmworldreset",true);
-                try {
-                    tmp.save(Boot.getConfigfile());
-                } catch (IOException e) {
-                    e.printStackTrace();
+                Bukkit.getServer().shutdown();
+            } else if (args.length == 1) {
+                if (args[0].equalsIgnoreCase("lockdown")) {
+                    FileConfiguration tmp = Boot.getConfig();
+                    tmp.set("lockdown", true);
+                    try {
+                        tmp.save(Boot.getConfigfile());
+                    } catch (IOException e) {
+
+                    }
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.kickPlayer("§cThe Server is rebooting in lockdown mode!\n§4NO one will be able to join after the reboot!\n§4This is to protect the server and the world");
+                    }
+                    Bukkit.getServer().shutdown();
+                } else if (args[0].equalsIgnoreCase("hardreset")) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.kickPlayer("§cThe Server is running a hardreset!\n§4The Economy- and Clansystem are being reset!");
+                    }
+                    for (File file : Main.getPlugin().getDataFolder().listFiles()) {
+                        file.delete();
+                    }
+                    Bukkit.getServer().shutdown();
+
+                } else if (args[0].equalsIgnoreCase("noworldreset")) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.kickPlayer("§cDer Server startet neu...");
+                    }
+                    FileConfiguration tmp = Boot.getConfig();
+                    tmp.set("nofarmworldreset", true);
+                    try {
+                        tmp.save(Boot.getConfigfile());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

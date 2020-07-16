@@ -5,3 +5,13 @@ pvparena:
   secondx: 0
   secondy: 0
   secondz: 0
+lobby:
+  firstx: 0
+  firsty: 0
+  firstz: 0
+  secondx: 0
+  secondy: 0
+  secondz: 0
+blockedworlds:
+  - "world_the_end"
+  - "world_nether"

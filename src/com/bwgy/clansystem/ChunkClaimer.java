@@ -46,12 +46,23 @@ public class ChunkClaimer {
             Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
         }
     }
+    public static void unclaimChunk(String clan, Chunk chunk){
+        FileConfiguration tmp=getConfig();
+        tmp.set(String.valueOf(chunk.getX())+"."+String.valueOf(chunk.getZ()),null);
+        try {
+            tmp.save(configfile);
+        } catch (IOException e) {
+            Main.getPlugin().getLogger().severe("Something wen't wrong (X_X)");
+            Main.getPlugin().getLogger().severe(e.getMessage());
+            Main.getPlugin().getServer().getPluginManager().disablePlugin(Main.getPlugin());
+        }
+    }
     public static String getOwner(Chunk chunk){
         return (getConfig().getString(String.valueOf(chunk.getX())+"."+String.valueOf(chunk.getZ())));
     }
     public static boolean hasChunkPermission(Player player){
         if(getOwner(player.getLocation().getChunk())!=null){
-            return (getOwner(player.getLocation().getChunk()).equals(Config.getClan(player.getUniqueId())));
+            return (getOwner(player.getLocation().getChunk()).equalsIgnoreCase(ClanSystem.getClan(player.getUniqueId())));
         }else{
             return true;
         }
